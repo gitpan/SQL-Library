@@ -1,7 +1,6 @@
 MANIFEST
 LICENSE
 README
-Todo
 Changes
 lib/SQL/Library.pm
 t/001_load.t

@@ -1,9 +1,9 @@
-package SQL::Library ;
+package SQL::Library;
 
-use strict ;
-use warnings ;
+use strict;
+use warnings;
 
-our $VERSION = 0.0.2 ;
+our $VERSION = 0.0.3;
 
 =head1 NAME
 
@@ -12,37 +12,37 @@ stored in INI-like files.
 
 =head1 VERSION
 
-This document refers to version 0.0.2 of SQL::Library.
+This document refers to version 0.0.3 of SQL::Library.
 
 =head1 SYNOPSIS
 
-  use SQL::Library ;
+  use SQL::Library;
     
-  my $sql   = new SQL::Library { lib => 'sql.lib' } ;
-                          # or { lib => [ <FH> ] } ;
-                          # or { lib => [ $string ] } ;
+  my $sql = new SQL::Library { lib => 'sql.lib' };
+                        # or { lib => [ <FH> ] };
+                        # or { lib => [ $string ] };
 
   ## Ask for a library entry by name...
-  my $query = $sql->retr( 'some_sql_query' ) ;
+  my $query = $sql->retr( 'some_sql_query' );
 
   ## Add or update an entry...
-  $sql->set( 'yet_another_query', <<'END' ) ;
+  $sql->set( 'yet_another_query', <<'END' );
   SELECT foo
   FROM   bar
   WHERE  zoot = 1
   END
 
   ## Remove an entry from the library...
-  $sql->drop( 'one_more_query' ) ;
+  $sql->drop( 'one_more_query' );
 
   ## List the entries in the library...
-  print join( ' : ', $sql->elements ), "\n" ;
+  print join( ' : ', $sql->elements ), "\n";
 
   ## Dump the contents of the library to a string...
-  my $lib_str = $sql->dump ;
+  my $lib_str = $sql->dump;
 
   ## Write the library to disk...
-  $sql->write ;
+  $sql->write;
 
 =head1 LIBRARY FILE FORMAT
 
@@ -86,54 +86,54 @@ library.
 
 sub new
 {
-    my $proto = shift ;
-    my $options = shift ;
+    my $proto = shift; 
+    my $options = shift;
     my $self = {
                  'options'  => $options,
                  'contents' => undef
-               } ;
+               };
 
-    my $curr_name = '' ;
+    my $curr_name = '';
 
-    my @lib_arr = () ;
+    my @lib_arr = ();
     if ( ref $self->{'options'}->{'lib'} eq 'ARRAY' )
     {
         # Could be a filehandle or a string.
         if ( @{ $self->{'options'}->{'lib'} } == 1 )
         {
-            @lib_arr = split /(?<=\n)/, $self->{'options'}->{'lib'}->[0] ;
+            @lib_arr = split /(?<=\n)/, $self->{'options'}->{'lib'}->[0];
         }
         else
         {
-            @lib_arr = @{ $self->{'options'}->{'lib'} } ;
+            @lib_arr = @{ $self->{'options'}->{'lib'} };
         }
     }
     else
     {
         open LIB, $self->{'options'}->{'lib'}
-          or die "Cannot open $self->{'options'}->{'lib'}: $!" ;
-        @lib_arr = <LIB> ;
-        close LIB ;
+          or die "Cannot open $self->{'options'}->{'lib'}: $!";
+        @lib_arr = <LIB>;
+        close LIB;
     }
 
     foreach ( @lib_arr )
     {
-        next if m{^\s*$} ;
-        next if m{^\s*#} ;
-        next if m{^\s*//} ;
+        next if m{^\s*$};
+        next if m{^\s*#};
+        next if m{^\s*//};
         if ( m{^\[([^\]]+)\]} )
         {
-            $curr_name = $1 ;
-            next ;
+            $curr_name = $1;
+            next;
         }
         if ( $curr_name )
         {
-            $self->{'contents'}->{$curr_name} .= $_ ;
+            $self->{'contents'}->{$curr_name} .= $_;
         }
     }
 
-    bless $self, $proto ;
-    return $self ;
+    bless $self, $proto;
+    return $self;
 }
 
 =item $OBJ-E<gt>retr( NAME )
@@ -144,8 +144,8 @@ Returns the library entry referenced by NAME.
 
 sub retr
 {
-    my ( $self, $entity_name ) = @_ ;
-    return $self->{'contents'}->{$entity_name} ;
+    my ( $self, $entity_name ) = @_;
+    return $self->{'contents'}->{$entity_name};
 }
 
 =item $OBJ-E<gt>set( NAME, VALUE )
@@ -157,9 +157,9 @@ library entries and to update existing ones.
 
 sub set
 {
-    my ( $self, $entity_name, $entity ) = @_ ;
-    $self->{'contents'}->{$entity_name} = $entity ;
-    return $self ;
+    my ( $self, $entity_name, $entity ) = @_;
+    $self->{'contents'}->{$entity_name} = $entity;
+    return $self;
 }
 
 =item $OBJ-E<gt>drop( NAME )
@@ -170,9 +170,9 @@ Drops entry NAME form the library.
 
 sub drop
 {
-    my ( $self, $entity_name ) = @_ ;
-    delete $self->{'contents'}->{$entity_name} ;
-    return $self ;
+    my ( $self, $entity_name ) = @_;
+    delete $self->{'contents'}->{$entity_name};
+    return $self;
 }
 
 =item $OBJ-E<gt>elements
@@ -183,8 +183,8 @@ Returns a list of all entry names in the library.
 
 sub elements
 {
-    my $self = shift ;
-    return sort keys %{$self->{'contents'}} ;
+    my $self = shift;
+    return sort keys %{$self->{'contents'}};
 }
 
 =item $OBJ-E<gt>dump
@@ -196,13 +196,13 @@ INI format that the module reads from.
 
 sub dump
 {
-    my $self   = shift ;
-    my $output = '' ;
+    my $self   = shift;
+    my $output = '';
     foreach ( sort keys %{$self->{'contents'}} )
     {
-        $output .= sprintf "[%s]\n%s\n", $_, $self->{'contents'}->{$_} ;
+        $output .= sprintf "[%s]\n%s\n", $_, $self->{'contents'}->{$_};
     }
-    return $output ;
+    return $output;
 }
 
 =item $OBJ-E<gt>write
@@ -213,11 +213,11 @@ Writes the library to the file named in C<lib>.
 
 sub write
 {
-    my $self = shift ;
+    my $self = shift;
     open OUT, ">$self->{'options'}->{'lib'}"
-      or die "Cannot open $self->{'options'}->{'lib'}: $!" ;
-    print OUT $self->dump ;
-    close OUT ;
+      or die "Cannot open $self->{'options'}->{'lib'}: $!";
+    print OUT $self->dump;
+    close OUT;
 }
 
 =back
@@ -259,3 +259,4 @@ at your option, any later version of Perl 5 you may have available.
 1 ;
 
 __END__
+

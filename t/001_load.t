@@ -8,7 +8,7 @@ use Test::More qw( no_plan ) ;
 
 BEGIN { use_ok( 'SQL::Library' ) ; }
 
-my $sql_file = new SQL::Library { lib => 'sqltest.lib' } ;
+my $sql_file = new SQL::Library { lib => 't/sqltest.lib' } ;
 ok( defined $sql_file, 'new() returned something' ) ;
 ok( $sql_file->isa( 'SQL::Library' ), '...and it\'s the right class' ) ;
 
